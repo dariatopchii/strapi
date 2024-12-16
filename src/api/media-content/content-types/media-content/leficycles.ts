@@ -1,27 +1,27 @@
-import fetch from "node-fetch";
-
 export default {
-  async afterCreate(event) {
-    const { result } = event;
+    async afterCreate(event) {
+        const { result } = event;
 
-    // Формируем payload для вебхука
-    const payload = {
-      hash: result.hash || "default_hash", // замените на нужное поле
-      metadata: result.metadata || "default_metadata", // замените на нужное поле
-    };
+        const payload = {
+            hash: result.hash || "default_hash",
+            metadata: result.metadata || "default_metadata",
+        };
 
-    console.log("Отправка вебхука с данными:", payload);
+        console.log("Отправка вебхука с данными:", payload);
 
-    // Отправляем данные на вебхук сервер
-    try {
-      await fetch("http://localhost:3000/webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      console.log("Вебхук успешно отправлен");
-    } catch (error) {
-      console.error("Ошибка при отправке вебхука:", error);
-    }
-  },
+        try {
+            const response = await fetch("http://localhost:3000/webhook", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const responseText = await response.text();
+            console.log("Ответ сервера вебхука:", response.status, responseText);
+
+            console.log("Вебхук успешно отправлен");
+        } catch (error) {
+            console.error("Ошибка при отправке вебхука:", error);
+        }
+    },
 };
